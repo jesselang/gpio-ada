@@ -1,0 +1,72 @@
+--    GPIO - A GPIO interface.
+--    Copyright (C) 2014 Jesse Lang <jesselang.com>
+--    See the bottom of this file for licensing details.
+
+abstract project GPIO_Settings is
+   type Build_Type is ("Debug", "Release");
+   Build : Build_Type := external ("LIBRARY_BUILD", "Debug");
+
+   --------------
+   -- Compiler --
+   --------------
+
+   Common_Options := ("-gnat05", "-gnato", "-fstack-check");
+   --  Common options used for the Debug and Release modes
+
+   Debug_Options := ("-Wall", "-gnatwae", "-g", "-gnata", "-gnatVa", "-gnaty3abdefhiklM130nOprsSux"); -- C
+
+   Release_Options := ("-O2", "-gnatn2");
+
+   package Compiler is
+      case Build is
+         when "Debug" =>
+            for Default_Switches ("Ada") use Common_Options & Debug_Options;
+         when "Release" =>
+            for Default_Switches ("Ada") use Common_Options & Release_Options;
+      end case;
+   end Compiler;
+
+   ------------
+   -- Binder --
+   ------------
+
+   package Binder is
+      for Default_Switches ("Ada") use ("-E");
+   end Binder;
+
+   -------------
+   -- Builder --
+   -------------
+
+   Common_Builder_Options := ("-m", "-j2");
+
+   package Builder is
+      case Build is
+         when "Debug" =>
+            for Default_Switches ("Ada") use Common_Builder_Options & ("-we", "-s");
+         when "Release" =>
+            for Default_Switches ("Ada") use Common_Builder_Options;
+      end case;
+   end Builder;
+end GPIO_Settings;
+
+--    This program is free software: you can redistribute it and/or modify
+--    it under the terms of the GNU General Public License as published by
+--    the Free Software Foundation, either version 3 of the License, or
+--    (at your option) any later version.
+--
+--    This program is distributed in the hope that it will be useful,
+--    but WITHOUT ANY WARRANTY; without even the implied warranty of
+--    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+--    GNU General Public License for more details.
+--
+--    You should have received a copy of the GNU General Public License
+--    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+--
+--    As a special exception, if other files instantiate generics from
+--    this unit, or you link this unit with other files to produce an
+--    executable, this unit does not by itself cause the resulting
+--    executable to be covered by the GNU General Public License. This
+--    exception does not however invalidate any other reasons why the
+--    executable file might be covered by the GNU Public License.
+
